@@ -29,7 +29,6 @@ liste_thetaM_theta0=zeros(360,1); liste_thetaE_theta0=zeros(360,1);
 
 % Force, energy, and velocity list
 liste_force=zeros(360,1); liste_couple_a_vide=zeros(360,1);
-liste_energie_potentielle=zeros(360,1);
 liste_vitesse=zeros(360,1);
 
 % Fixed point of the linkage
@@ -259,6 +258,19 @@ hold off
 figure()
 plot(listeM_prime_rot(:,1),listeM_prime_rot(:,2),'b')
 
+for theta0=0:1:359
+    
+    tD=CalculMoment(liste_thetaD(theta0+1)-liste_thetaD(k0));
+    tE=CalculMoment(liste_thetaE(theta0+1)-liste_thetaE(k0));
+    tM=CalculMoment(liste_thetaM(theta0+1)-liste_thetaM(k0));
+    tA=CalculMoment(liste_thetaA(theta0+1)-liste_thetaA(k0));
+    tB=CalculMoment(liste_thetaB(theta0+1)-liste_thetaB(k0));
+
+    liste_force(theta0+1)=(-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB)/liste_vitesse(theta0+1);
+    liste_couple_a_vide(theta0+1)=-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB;
+ 
+    
+end
 
 %%% SUBFUNCTIONS 
 

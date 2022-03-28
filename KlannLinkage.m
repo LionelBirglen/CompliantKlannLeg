@@ -1,3 +1,18 @@
+% Matlab Script for the kinetostatic analysis of a new version of Klann's
+% robotic leg using compliant joints
+%
+% by Jerome Bastien and Lionel Birglen
+% Polytechnique Montreal
+% March 2022
+%
+% https://github.com/LionelBirglen/CompliantKlannLeg
+%
+% GNU GPL v2 license
+
+close all;
+clear all;
+
+
 % Optimal parameters
 x=[39.6566   80.5157  -10.6073   62.0000   48.4410   37.4648];
 L2=x(1);
@@ -93,7 +108,7 @@ for theta0=0:1:359
     xEM=M(1)-E(1); yEM=M(2)-E(2); xEB=B(1)-E(1); yEB=B(2)-E(2);
     liste_thetaE(theta0+1)=180 / pi * acos((xEM * xEB + yEM * yEB)/(sqrt(xEM^2 + yEM^2) * sqrt(xEB^2 + yEB^2)));
     
-    % Analytical cComputation of the velocities using planar screws
+    % Analytical computation of the velocities using planar screws
     
     phi=atan2(D(2) - C(2), D(1) - C(1));
     
@@ -181,6 +196,27 @@ liste_pts=[listeC_rot; listeD_rot; listeM_rot; listeE_rot; A_rot; B_rot];
 
 position_pas=min(listeM_prime_rot(:,2))-min(liste_pts(:,2));
 
+
+% Animation
+figure
+i=1;
+for theta0=0:1:359
+    pause(0.01)
+    clf
+    patch([0 A_rot(1) B_rot(1) 0],[0 A_rot(2) B_rot(2) 0],'ko-','Markersize',5,'Linewidth',2,'FaceAlpha',0.25)
+    hold on
+    plot([A_rot(1) listeD_rot(i,1) listeC_rot(i,1) 0],[A_rot(2) listeD_rot(i,2) listeC_rot(i,2) 0],'ro-','Markersize',10,'Linewidth',2)
+    patch([listeD_rot(i,1) listeM_rot(i,1) listeC_rot(i,1)],[listeD_rot(i,2) listeM_rot(i,2) listeC_rot(i,2)],'ro-','Markersize',10,'Linewidth',2,'FaceAlpha',0.5)
+    plot([B_rot(1) listeE_rot(i,1) listeM_rot(i,1) listeM_prime_rot(i,1)],[B_rot(2) listeE_rot(i,2) listeM_rot(i,2) listeM_prime_rot(i,2)],'ro-','Markersize',10,'Linewidth',2)
+    plot(listeM_prime_rot(1:i,1),listeM_prime_rot(1:i,2),'b','Linewidth',1)
+    i=i+1;
+    axis([-200 150 -250 50])
+    title('Animation')
+    grid on
+end
+
+
+
 % Original trajectory plotting
 figure()
 plot(listeM_prime(:,1),listeM_prime(:,2));
@@ -196,6 +232,7 @@ plot([B(1) E0(1) M0(1) Mp0(1)],[B(2) E0(2) M0(2) Mp0(2)],'ro-','Markersize',10,'
 legend("M' Trajectory","D Trajectory","M Trajectory","E Trajectory","C Trajectory", "", "","","")
 axis equal;
 hold off
+
 
 % Rotated trajectory plots
 figure()
@@ -259,7 +296,6 @@ figure()
 plot(listeM_prime_rot(:,1),listeM_prime_rot(:,2),'b')
 
 for theta0=0:1:359
-    
     tD=CalculMoment(liste_thetaD(theta0+1)-liste_thetaD(k0));
     tE=CalculMoment(liste_thetaE(theta0+1)-liste_thetaE(k0));
     tM=CalculMoment(liste_thetaM(theta0+1)-liste_thetaM(k0));
@@ -268,8 +304,6 @@ for theta0=0:1:359
 
     liste_force(theta0+1)=(-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB)/liste_vitesse(theta0+1);
     liste_couple_a_vide(theta0+1)=-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB;
- 
-    
 end
 
 %%% SUBFUNCTIONS 

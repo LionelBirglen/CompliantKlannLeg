@@ -177,6 +177,7 @@ for theta0=k0:1:359+k0
         M0=M;
         E0=E;
         Mp0=M_prime;
+        k0=k0-17;
         A=[-L4,0];
         B=[-L4+L8*cos(thetaAB),L8*sin(thetaAB)];
     end
@@ -310,11 +311,11 @@ title('Optimal foot trajectory')
 % Computation of the required torque to drive the leg
 for theta0=0:1:359
     % Compliance torque computation
-    tD=CalculMoment(liste_thetaD(theta0+1)-liste_thetaD(1));
-    tE=CalculMoment(liste_thetaE(theta0+1)-liste_thetaE(1));
-    tM=CalculMoment(liste_thetaM(theta0+1)-liste_thetaM(1));
-    tA=CalculMoment(liste_thetaA(theta0+1)-liste_thetaA(1));
-    tB=CalculMoment(liste_thetaB(theta0+1)-liste_thetaB(1));
+    tD=CalculMoment(liste_thetaD(theta0+1)-liste_thetaD(k0));
+    tE=CalculMoment(liste_thetaE(theta0+1)-liste_thetaE(k0));
+    tM=CalculMoment(liste_thetaM(theta0+1)-liste_thetaM(k0));
+    tA=CalculMoment(liste_thetaA(theta0+1)-liste_thetaA(k0));
+    tB=CalculMoment(liste_thetaB(theta0+1)-liste_thetaB(k0));
 
     % Generated output foot force and actuator torque
     liste_force(theta0+1)=(-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB)/liste_vitesse(theta0+1);

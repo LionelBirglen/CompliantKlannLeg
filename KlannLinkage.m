@@ -63,6 +63,7 @@ liste_thetaE_theta0=zeros(360,1);
 liste_force=zeros(360,1); 
 liste_couple_a_vide=zeros(360,1);
 liste_vitesse=zeros(360,1);
+liste_energie_potentielle=zeros(360,1);
 
 % Fixed points of the linkage
 O=[0, 0]; 
@@ -75,10 +76,10 @@ global mat_E
 mat_E=[0 -1; 1 0];
 
 % Simulation of a complete turn of the input crank, one degree dicrete step
-for theta0=0:1:359
+for theta0=k0:1:359+k0
     % Point C computation and list update
     C=[L1*cos(theta0*pi/180),L1*sin(theta0*pi/180)];
-    listeC(theta0+1,:)=C;
+    listeC(mod(theta0-1,360)+1,:)=C;
     
     % Point D
     d=sqrt((-L4-L1*cos(theta0*pi/180))^2+(-L1*sin(theta0*pi/180))^2);
@@ -87,13 +88,13 @@ for theta0=0:1:359
     x2=L1*cos(theta0*pi/180)+a*(-L4-L1*cos(theta0*pi/180))/d;
     y2=L1*sin(theta0*pi/180)+a*(-L1*sin(theta0*pi/180))/d;
     D=[x2+h*(-L1*sin(theta0*pi/180))/d,y2-h*(-L4-L1*cos(theta0*pi/180))/d];
-    listeD(theta0+1,:)=D;
+    listeD(mod(theta0-1,360)+1,:)=D;
     
     % Point M
     XCD=D(1)-C(1);
     YCD=D(2)-C(2);
     M=[rho*(XCD*cos(alpha)-YCD*sin(alpha))+C(1),rho*(XCD*sin(alpha)+YCD*cos(alpha))+C(2)];
-    listeM(theta0+1,:)=M;
+    listeM(mod(theta0-1,360)+1,:)=M;
      
     % Point E
     d=sqrt((-L4+L8*cos(thetaAB)-M(1))^2+(L8*sin(thetaAB)-M(2))^2);
@@ -102,23 +103,23 @@ for theta0=0:1:359
     x2=M(1)+a*(-L4+L8*cos(thetaAB)-M(1))/d;
     y2=M(2)+a*(L8*sin(thetaAB)-M(2))/d;
     E=[x2-h*(L8*sin(thetaAB)-M(2))/d,y2+h*(-L4+L8*cos(thetaAB)-M(1))/d];
-    listeE(theta0+1,:)=E;
+    listeE(mod(theta0-1,360)+1,:)=E;
     
     % Point M'
     XEM=M(1)-E(1);
     YEM=M(2)-E(2);
     M_prime=[rho*(XEM*cos(MEM)-YEM*sin(MEM))+E(1),rho*(XEM*sin(MEM)+YEM*cos(MEM))+E(2)];
-    listeM_prime(theta0+1,:)=M_prime;
+    listeM_prime(mod(theta0-1,360)+1,:)=M_prime;
 
     % Update of the joint angles
-    liste_thetaA(theta0+1)=180 / pi * atan2(D(2), D(1)+L4);
-    liste_thetaB(theta0+1)=180 / pi * (atan2(E(2) - L8 * sin(thetaAB), E(1) + L4 - L8 * cos(thetaAB)));
+    liste_thetaA(mod(theta0-1,360)+1)=180 / pi * atan2(D(2), D(1)+L4);
+    liste_thetaB(mod(theta0-1,360)+1)=180 / pi * (atan2(E(2) - L8 * sin(thetaAB), E(1) + L4 - L8 * cos(thetaAB)));
     xDA=A(1)-D(1); yDA=A(2)-D(2); xDC=C(1)-D(1); yDC=C(2)-D(2);
-    liste_thetaD(theta0+1)=180 / pi * acos((xDA * xDC + yDA * yDC)/(sqrt(xDA^2 + yDA^2) * sqrt(xDC^2 + yDC^2)));
+    liste_thetaD(mod(theta0-1,360)+1)=180 / pi * acos((xDA * xDC + yDA * yDC)/(sqrt(xDA^2 + yDA^2) * sqrt(xDC^2 + yDC^2)));
     xMD=D(1)-D(1); yMD=D(2)-E(2); xME=E(1)-M(1); yME=E(2)-M(2);
-    liste_thetaM(theta0+1)=180 / pi * acos((xMD * xMD + yMD * yME)/(sqrt(xMD^2 + yMD^2) * sqrt(xME^2 + yME^2)));
+    liste_thetaM(mod(theta0-1,360)+1)=180 / pi * acos((xMD * xMD + yMD * yME)/(sqrt(xMD^2 + yMD^2) * sqrt(xME^2 + yME^2)));
     xEM=M(1)-E(1); yEM=M(2)-E(2); xEB=B(1)-E(1); yEB=B(2)-E(2);
-    liste_thetaE(theta0+1)=180 / pi * acos((xEM * xEB + yEM * yEB)/(sqrt(xEM^2 + yEM^2) * sqrt(xEB^2 + yEB^2)));
+    liste_thetaE(mod(theta0-1,360)+1)=180 / pi * acos((xEM * xEB + yEM * yEB)/(sqrt(xEM^2 + yEM^2) * sqrt(xEB^2 + yEB^2)));
     
     % Analytical computation of the velocities using planar screws    
     phi=atan2(D(2) - C(2), D(1) - C(1));
@@ -156,18 +157,18 @@ for theta0=0:1:359
     visseur_pour_E=AF_pour_E\mat_b;
     
     % Update of the foot velocity
-    liste_vitesse(theta0+1)=sqrt(visseur(2)^2 + visseur(3)^2);
+    liste_vitesse(mod(theta0-1,360)+1)=sqrt(visseur(2)^2 + visseur(3)^2);
     
     % Computation of the kinematic coefficients for application of the 
     % virtual work principle with the compliant version of the leg
-    liste_thetaB_theta0(theta0+1)=visseur_pour_E(3)/(E(1)-B(1));
-    liste_thetaA_theta0(theta0+1)=L1*(sin(theta0*pi/180)-tan(phi)*cos(theta0*pi/180))/ ...
-        (L2*(sin(liste_thetaA(theta0+1)*pi/180)-tan(phi)*cos(liste_thetaA(theta0+1)*pi/180)));
-    thetaphi_theta0=L1*(sin(theta0*pi/180)-tan(liste_thetaA(theta0+1)*pi/180) * cos(theta0*pi/180)) / ...
-        (L3 * (-sin(phi) + tan(liste_thetaA(theta0+1)*pi/180) * cos(phi)));
-    liste_thetaD_theta0(theta0+1)=-liste_thetaA_theta0(theta0+1)+thetaphi_theta0;
-    liste_thetaM_theta0(theta0+1)=visseur(1)+thetaphi_theta0*pi/180;
-    liste_thetaE_theta0(theta0+1)=-visseur(1)+liste_thetaB_theta0(theta0+1);
+    liste_thetaB_theta0(mod(theta0-1,360)+1)=visseur_pour_E(3)/(E(1)-B(1));
+    liste_thetaA_theta0(mod(theta0-1,360)+1)=L1*(sin(theta0*pi/180)-tan(phi)*cos(theta0*pi/180))/ ...
+        (L2*(sin(liste_thetaA(mod(theta0-1,360)+1)*pi/180)-tan(phi)*cos(liste_thetaA(mod(theta0-1,360)+1)*pi/180)));
+    thetaphi_theta0=L1*(sin(theta0*pi/180)-tan(liste_thetaA(mod(theta0-1,360)+1)*pi/180) * cos(theta0*pi/180)) / ...
+        (L3 * (-sin(phi) + tan(liste_thetaA(mod(theta0-1,360)+1)*pi/180) * cos(phi)));
+    liste_thetaD_theta0(mod(theta0-1,360)+1)=-liste_thetaA_theta0(mod(theta0-1,360)+1)+thetaphi_theta0;
+    liste_thetaM_theta0(mod(theta0-1,360)+1)=visseur(1)+thetaphi_theta0*pi/180;
+    liste_thetaE_theta0(mod(theta0-1,360)+1)=-visseur(1)+liste_thetaB_theta0(mod(theta0-1,360)+1);
 
     % Initial configuration save
     if theta0==k0
@@ -201,23 +202,23 @@ B_rot=Rotation(B, angle_opti);
 liste_pts=[listeC_rot; listeD_rot; listeM_rot; listeE_rot; A_rot; B_rot];
 position_pas=min(listeM_prime_rot(:,2))-min(liste_pts(:,2));
 
-% Animation of the leg motion
-figure
-i=1;
-for theta0=0:1:359
-    pause(0.01)
-    clf
-    patch([0 A_rot(1) B_rot(1) 0],[0 A_rot(2) B_rot(2) 0],'ko-','Markersize',5,'Linewidth',2,'FaceAlpha',0.25)
-    hold on
-    plot([A_rot(1) listeD_rot(i,1) listeC_rot(i,1) 0],[A_rot(2) listeD_rot(i,2) listeC_rot(i,2) 0],'ro-','Markersize',10,'Linewidth',2)
-    patch([listeD_rot(i,1) listeM_rot(i,1) listeC_rot(i,1)],[listeD_rot(i,2) listeM_rot(i,2) listeC_rot(i,2)],'ro-','Markersize',10,'Linewidth',2,'FaceAlpha',0.5)
-    plot([B_rot(1) listeE_rot(i,1) listeM_rot(i,1) listeM_prime_rot(i,1)],[B_rot(2) listeE_rot(i,2) listeM_rot(i,2) listeM_prime_rot(i,2)],'ro-','Markersize',10,'Linewidth',2)
-    plot(listeM_prime_rot(1:i,1),listeM_prime_rot(1:i,2),'b','Linewidth',1)
-    i=i+1;
-    axis([-200 150 -250 50])
-    title('Animation')
-    grid on
-end
+% % Animation of the leg motion
+% figure
+% i=1;
+% for theta0=0:1:359
+%     pause(0.01)
+%     clf
+%     patch([0 A_rot(1) B_rot(1) 0],[0 A_rot(2) B_rot(2) 0],'ko-','Markersize',5,'Linewidth',2,'FaceAlpha',0.25)
+%     hold on
+%     plot([A_rot(1) listeD_rot(i,1) listeC_rot(i,1) 0],[A_rot(2) listeD_rot(i,2) listeC_rot(i,2) 0],'ro-','Markersize',10,'Linewidth',2)
+%     patch([listeD_rot(i,1) listeM_rot(i,1) listeC_rot(i,1)],[listeD_rot(i,2) listeM_rot(i,2) listeC_rot(i,2)],'ro-','Markersize',10,'Linewidth',2,'FaceAlpha',0.5)
+%     plot([B_rot(1) listeE_rot(i,1) listeM_rot(i,1) listeM_prime_rot(i,1)],[B_rot(2) listeE_rot(i,2) listeM_rot(i,2) listeM_prime_rot(i,2)],'ro-','Markersize',10,'Linewidth',2)
+%     plot(listeM_prime_rot(1:i,1),listeM_prime_rot(1:i,2),'b','Linewidth',1)
+%     i=i+1;
+%     axis([-200 150 -250 50])
+%     title('Animation')
+%     grid on
+% end
 
 % Original (before reorientation) optimal plots of the different point 
 % trajectories
@@ -309,24 +310,49 @@ title('Optimal foot trajectory')
 % Computation of the required torque to drive the leg
 for theta0=0:1:359
     % Compliance torque computation
-    tD=CalculMoment(liste_thetaD(theta0+1)-liste_thetaD(k0));
-    tE=CalculMoment(liste_thetaE(theta0+1)-liste_thetaE(k0));
-    tM=CalculMoment(liste_thetaM(theta0+1)-liste_thetaM(k0));
-    tA=CalculMoment(liste_thetaA(theta0+1)-liste_thetaA(k0));
-    tB=CalculMoment(liste_thetaB(theta0+1)-liste_thetaB(k0));
+    tD=CalculMoment(liste_thetaD(theta0+1)-liste_thetaD(1));
+    tE=CalculMoment(liste_thetaE(theta0+1)-liste_thetaE(1));
+    tM=CalculMoment(liste_thetaM(theta0+1)-liste_thetaM(1));
+    tA=CalculMoment(liste_thetaA(theta0+1)-liste_thetaA(1));
+    tB=CalculMoment(liste_thetaB(theta0+1)-liste_thetaB(1));
 
     % Generated output foot force and actuator torque
     liste_force(theta0+1)=(-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB)/liste_vitesse(theta0+1);
     liste_couple_a_vide(theta0+1)=-liste_thetaD_theta0(theta0+1)*tD-liste_thetaE_theta0(theta0+1)*tE-liste_thetaM_theta0(theta0+1)*tM-liste_thetaA_theta0(theta0+1)*tA-liste_thetaB_theta0(theta0+1)*tB;
+    liste_energie_potentielle(theta0+1)=1/2*pi/180*(tD^2+tE^2+tM^2+tA^2+tB^2);
+    
 end
 
+
 % Plot of the actuator torque
-figure
-plot(liste_couple_a_vide)
-grid on
-xlabel('theta0 (°)')
-ylabel('Torque (Nm)')
-title('Actuator torque')
+liste_couple_a_vide(1)=liste_couple_a_vide(2);
+% Extract positive and negative part
+yp = (liste_couple_a_vide + abs(liste_couple_a_vide))/2;
+yn = (liste_couple_a_vide - abs(liste_couple_a_vide))/2;
+% Plot the data using area function
+figure()
+plot(linspace(0,359,360), liste_couple_a_vide,'linewidth',2)
+hold on 
+legend("Motor torque",'Support Phase start','Support Phase end')
+area(linspace(0,359,360),yp,'FaceColor',[160/255 251/255 142/255])
+area(linspace(0,359,360),yn,'FaceColor',[239/255 134/255 131/255])
+plot([indice1], [liste_couple_a_vide(indice1)],'bo-','Markersize',15,'Linewidth',2)
+plot([indice2], [liste_couple_a_vide(indice2)],'mo-','Markersize',15,'Linewidth',2)
+legend("Motor torque",'Energy Release','Energy Storage','Support Phase start','Support Phase end')
+xlabel("theta0 (°)")
+ylabel("Torque (N.m)")
+hold off
+
+%Print potential energy
+figure()
+plot(linspace(0,359,360), liste_energie_potentielle,'Linewidth',2)
+hold on 
+plot([indice1], [liste_energie_potentielle(indice1)],'bo-','Markersize',15,'Linewidth',2)
+plot([indice2], [liste_energie_potentielle(indice2)],'mo-','Markersize',15,'Linewidth',2)
+legend("Potential Energy",'Support Phase start','Support Phase end')
+xlabel("theta0 (°)")
+ylabel("Potential Energy (J)")
+hold off
 
 
 %%% SUBFUNCTIONS 

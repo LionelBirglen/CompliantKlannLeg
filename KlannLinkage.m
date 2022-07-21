@@ -203,23 +203,23 @@ B_rot=Rotation(B, angle_opti);
 liste_pts=[listeC_rot; listeD_rot; listeM_rot; listeE_rot; A_rot; B_rot];
 position_pas=min(listeM_prime_rot(:,2))-min(liste_pts(:,2));
 
-% % Animation of the leg motion
-% figure
-% i=1;
-% for theta0=0:1:359
-%     pause(0.01)
-%     clf
-%     patch([0 A_rot(1) B_rot(1) 0],[0 A_rot(2) B_rot(2) 0],'ko-','Markersize',5,'Linewidth',2,'FaceAlpha',0.25)
-%     hold on
-%     plot([A_rot(1) listeD_rot(i,1) listeC_rot(i,1) 0],[A_rot(2) listeD_rot(i,2) listeC_rot(i,2) 0],'ro-','Markersize',10,'Linewidth',2)
-%     patch([listeD_rot(i,1) listeM_rot(i,1) listeC_rot(i,1)],[listeD_rot(i,2) listeM_rot(i,2) listeC_rot(i,2)],'ro-','Markersize',10,'Linewidth',2,'FaceAlpha',0.5)
-%     plot([B_rot(1) listeE_rot(i,1) listeM_rot(i,1) listeM_prime_rot(i,1)],[B_rot(2) listeE_rot(i,2) listeM_rot(i,2) listeM_prime_rot(i,2)],'ro-','Markersize',10,'Linewidth',2)
-%     plot(listeM_prime_rot(1:i,1),listeM_prime_rot(1:i,2),'b','Linewidth',1)
-%     i=i+1;
-%     axis([-200 150 -250 50])
-%     title('Animation')
-%     grid on
-% end
+% Animation of the leg motion
+figure
+i=1;
+for theta0=0:1:359
+    pause(0.01)
+    clf
+    patch([0 A_rot(1) B_rot(1) 0],[0 A_rot(2) B_rot(2) 0],'ko-','Markersize',5,'Linewidth',2,'FaceAlpha',0.25)
+    hold on
+    plot([A_rot(1) listeD_rot(i,1) listeC_rot(i,1) 0],[A_rot(2) listeD_rot(i,2) listeC_rot(i,2) 0],'ro-','Markersize',10,'Linewidth',2)
+    patch([listeD_rot(i,1) listeM_rot(i,1) listeC_rot(i,1)],[listeD_rot(i,2) listeM_rot(i,2) listeC_rot(i,2)],'ro-','Markersize',10,'Linewidth',2,'FaceAlpha',0.5)
+    plot([B_rot(1) listeE_rot(i,1) listeM_rot(i,1) listeM_prime_rot(i,1)],[B_rot(2) listeE_rot(i,2) listeM_rot(i,2) listeM_prime_rot(i,2)],'ro-','Markersize',10,'Linewidth',2)
+    plot(listeM_prime_rot(1:i,1),listeM_prime_rot(1:i,2),'b','Linewidth',1)
+    i=i+1;
+    axis([-200 150 -250 50])
+    title('Animation')
+    grid on
+end
 
 % Original (before reorientation) optimal plots of the different point 
 % trajectories
@@ -334,12 +334,11 @@ yn = (liste_couple_a_vide - abs(liste_couple_a_vide))/2;
 figure()
 plot(linspace(0,359,360), liste_couple_a_vide,'linewidth',2)
 hold on 
-legend("Motor torque",'Support Phase start','Support Phase end')
 area(linspace(0,359,360),yp,'FaceColor',[160/255 251/255 142/255])
 area(linspace(0,359,360),yn,'FaceColor',[239/255 134/255 131/255])
 plot([indice1], [liste_couple_a_vide(indice1)],'bo-','Markersize',15,'Linewidth',2)
 plot([indice2], [liste_couple_a_vide(indice2)],'mo-','Markersize',15,'Linewidth',2)
-legend("Motor torque",'Energy Release','Energy Storage','Support Phase start','Support Phase end')
+legend("Motor torque",'Energy Release','Energy Storage','Support Phase start','Support Phase end','Location','SouthEast')
 xlabel("theta0 (°)")
 ylabel("Torque (N.m)")
 hold off

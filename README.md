@@ -1,4 +1,4 @@
-# Compliant Klann-Linkage Robot Leg
+# Compliant Klann-Linkage Robot
 by Jerome Bastien and Lionel Birglen
 Polytechnique Montreal, 2022
 

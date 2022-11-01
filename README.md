@@ -2,7 +2,7 @@
 by Jerome Bastien and Lionel Birglen
 Polytechnique Montreal, 2022
 
-![Alt text](RobotJerome2.png?raw=true "Title")
+![Klann Robot](RobotJerome1.png?raw=true "Title")
 
 This repository contains the STL to build a walking machine using two robotic legs based on a compliant mechanism embodiement of Klann's linkage. We also included the Matlab source file we used to design this leg. The robot stores elastic energy when the leg is moving in the air that is released when that leg touches the ground thereby helping with propulsion and reducing power peaks.
 
